@@ -12,8 +12,13 @@ def read_file():
     """
     This function reads the file "test_data.txt", parses each line,
     and returns the data in class Person.
-    No input required
-    Outputs class array Person_List
+
+    Args:
+        None
+
+    Returns:
+        Person_List: A class array containing first name, last name, gender,
+        age, TSH levels, and thyroid diagnosis
     """
     Person_List = []
     info = open("test_data.txt", "r")
@@ -27,8 +32,9 @@ def read_file():
         [First, Last] = SeparateFirstLast(Name)
         Age = info.readline()
         Gender = info.readline()
+        Gender = Gender.rstrip("\n")  # Remove newline character after gender
         TSHraw = info.readline()
-        TSH = TSHConversion(TSHraw)
+        TSH = TSHConversion(TSHraw)  # Converts string to float
         Diagnosis = "normal thyroid function"  # Placeholder until diagnosis
         Person_List.append(Person(First, Last, Age, Gender, Diagnosis, TSH))
     info.close()
@@ -39,18 +45,32 @@ def SeparateFirstLast(Name):
     """
     This function accepts input in the format "Firstname Lastname\n" and
     separates the string into two separate strings, "Firstname" and "Lastname"
+
+    Args:
+        FullName: The full two-word string
+
+    Returns:
+        First: First name, the first word in the string
+        Last: Last name, the second word in the string
     """
-    FullName = Name.split(" ")
+    FullName = Name.split(" ")  # Split string by space
     First = FullName[0]
     Last = FullName[1]
-    Last = Last.rstrip("\n")
+    Last = Last.rstrip("\n")  # Remove newline character after last name
     return [First, Last]
 
 
 def TSHConversion(TSHraw):
     """
-    This function takes a string input in the form TSH, 1, 2, 3...
-    and converts into an array of floats.
+    This function takes a string input and converts
+    into an array of floats.
+
+    Args:
+        TSHraw: a string with format TSH, 1, 2, 3...
+
+    Returns:
+        TSH: The floating point list [1, 2, 3...]
+
     """
     TSHstr = TSHraw[4:]
     TSHarray = TSHstr.split(",")
@@ -65,16 +85,27 @@ def TSHConversion(TSHraw):
 
 def DiagnoseThyroid(Person_List):
     """
-    This function takes the class Person and diagnoses the thyroid function of
-    the individual based on the variable TSH in the class Person
+    This function takes the class Person and diagnoses the thyroid function
+    of the individual based on the variable TSH in the class Person
 
-    Hypothyroidism:
-    TSH > 4.0
+    Args:
+        Person_List: a list containing elements of the class Person. This
+        class contains the variable Person.TSH, which will be used for
+        diagnosis
 
-    Hyperthyroidism:
-    TSH < 1.0
+    Returns:
+        Person_List: the same list containing elements of class Person. Only
+        the class variable Person.Diagnosis will be affected
 
-    Otherwise: normal thyroid function
+        Person.Diagnosis: A diagnosis of thyroid function based on the values
+        of variable Person.TSH:
+            Hypothyroidism:
+            TSH > 4.0
+
+            Hyperthyroidism:
+            TSH < 1.0
+
+            Otherwise: normal thyroid function
     """
     i = 0
     while i < len(Person_List):
@@ -91,6 +122,37 @@ def DiagnoseThyroid(Person_List):
     return Person_List
 
 
-if __name__ == "__main__":
+def Export_Data(Person_List):
+    """
+    Writes patient data to JSON file
+
+    Args:
+        Person_List: a list of object type Person containing patient
+        information
+
+    Returns:
+        None
+    """
+    import json
+    i = 0
+    while i < len(Person_List):
+        person_dictionary = {"First Name": Person_List[i].first,
+                             "Last Name": Person_List[i].last,
+                             "Gender": Person_List[i].Gender,
+                             "Diagnosis": Person_List[i].Diagnosis,
+                             "TSH": Person_List[i].TSH}
+        filename = Person_List[i].first + "-" + Person_List[i].last+".json"
+        out_file = open(filename, "w")
+        json.dump(person_dictionary, out_file)
+        out_file.close()
+        i = i+1
+
+
+def main():
     Person_List = read_file()
     Person_List = DiagnoseThyroid(Person_List)
+    Export_Data(Person_List)
+
+
+if __name__ == "__main__":
+    main()
