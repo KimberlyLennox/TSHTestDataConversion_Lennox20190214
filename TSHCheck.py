@@ -148,8 +148,29 @@ def Export_Data(Person_List):
         i = i+1
 
 
+def TSHSort(Person_List):
+    """
+    Sorts TSH values in numerical order
+
+    Args:
+        Person_List: a list of object type Person containing patient
+        information
+
+    Returns:
+        Person_List: with Person_List.TSH sorted in numerical order
+    """
+    i = 0
+    while i < len(Person_List):
+        TSH = Person_List[i].TSH
+        TSH.sort()
+        Person_List[i].TSH = TSH
+        i = i+1
+    return Person_List
+
+
 def main():
     Person_List = read_file()
+    Person_List = TSHSort(Person_List)
     Person_List = DiagnoseThyroid(Person_List)
     Export_Data(Person_List)
 
