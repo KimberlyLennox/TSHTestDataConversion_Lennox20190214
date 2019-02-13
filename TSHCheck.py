@@ -1,9 +1,10 @@
 class Person:
-    def __init__(self, first, last, age, gender, TSH):
+    def __init__(self, first, last, age, gender, diagnosis, TSH):
         self.first = first
         self.last = last
         self.age = age
         self.Gender = gender
+        self.Diagnosis = diagnosis
         self.TSH = TSH
 
 
@@ -28,7 +29,8 @@ def read_file():
         Gender = info.readline()
         TSHraw = info.readline()
         TSH = TSHConversion(TSHraw)
-        Person_List.append(Person(First, Last, Age, Gender, TSH))
+        Diagnosis = "normal thyroid function"  # Placeholder until diagnosis
+        Person_List.append(Person(First, Last, Age, Gender, Diagnosis, TSH))
     info.close()
     return Person_List
 
@@ -48,7 +50,7 @@ def SeparateFirstLast(Name):
 def TSHConversion(TSHraw):
     """
     This function takes a string input in the form TSH, 1, 2, 3...
-    and converts into an array of %1.2 floats.
+    and converts into an array of floats.
     """
     TSHstr = TSHraw[4:]
     TSHarray = TSHstr.split(",")
@@ -61,11 +63,34 @@ def TSHConversion(TSHraw):
     return TSH
 
 
+def DiagnoseThyroid(Person_List):
+    """
+    This function takes the class Person and diagnoses the thyroid function of
+    the individual based on the variable TSH in the class Person
+
+    Hypothyroidism:
+    TSH > 4.0
+
+    Hyperthyroidism:
+    TSH < 1.0
+
+    Otherwise: normal thyroid function
+    """
+    i = 0
+    while i < len(Person_List):
+        TSH = Person_List[i].TSH
+        Diagnosis = Person_List[i].Diagnosis
+        TSHmax = max(TSH)
+        TSHmin = min(TSH)
+        if TSHmax > 4.0:
+            Diagnosis = "hypothyroidism"
+        elif TSHmin < 1.0:
+            Diagnosis = "hyperthyroidism"
+        Person_List[i].Diagnosis = Diagnosis
+        i = i+1
+    return Person_List
+
+
 if __name__ == "__main__":
     Person_List = read_file()
-    vec = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    for i in vec:
-        print(Person_List[i].first)
-        print(Person_List[i].last)
-        print(Person_List[i].age)
-        print(Person_List[i].TSH)
+    Person_List = DiagnoseThyroid(Person_List)
