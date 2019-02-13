@@ -27,7 +27,7 @@ def read_file():
         Age = info.readline()
         Gender = info.readline()
         TSHraw = info.readline()
-        TSH = TSHraw[4:]
+        TSH = TSHConversion(TSHraw)
         Person_List.append(Person(First, Last, Age, Gender, TSH))
     info.close()
     return Person_List
@@ -43,6 +43,23 @@ def SeparateFirstLast(Name):
     Last = FullName[1]
     Last = Last.rstrip("\n")
     return [First, Last]
+
+
+def TSHConversion(TSHraw):
+    """
+    This function takes a string input in the form TSH, 1, 2, 3...
+    and converts into an array of %1.2 floats.
+    """
+    TSHstr = TSHraw[4:]
+    TSHarray = TSHstr.split(",")
+    i = 0
+    while i < len(TSHarray):
+        TSHarray[i] = TSHarray[i].rstrip("\n")
+        i = i+1
+    import numpy as np
+    TSH = [float(i) for i in TSHarray]
+    return TSH
+
 
 if __name__ == "__main__":
     Person_List = read_file()
